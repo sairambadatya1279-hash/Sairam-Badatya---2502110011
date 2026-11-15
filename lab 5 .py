@@ -1,66 +1,60 @@
 it 12-
-#Raw bench line
-line = "P123 25.4 3.5"
+# One Line, Three Fields
 
-# Extract the fields
-part_code, dia, shift = line.split()
+raw = "P001, 25.02, day"
 
-# Convert diameter to a real float
-dia = float(dia)
+# Extract fields
+fields = raw.split(",")
 
-# Print each value with a label
-print("Part code:", part_code)
-print("Diameter:", dia)
+part_code = fields[0].strip()
+diameter = float(fields[1].strip())
+shift = fields[2].strip()
+
+# Print details
+print("Part Code:", part_code)
+print("Diameter:", diameter)
 print("Shift:", shift)
 
 # Prove diameter is a number
-print("Diameter + 0.01:", dia + 0.01)
+print("Diameter + 0.01 =", diameter + 0.01)
 
 it 10-
-# 10 log lines with messy spacing
+# The Whole Shift Log
+
 logs = [
-    "P101   25.4   A",
-    "P102  30.2 B",
-    "P103    18.7    C",
-    "P104 22.5 D",
-    "P105     27.8 E",
-    "P106  31.0    F",
-    "P107   19.6 G",
-    "P108  24.3     H",
-    "P109 29.7 I",
-    "P110    21.5    J"
+    "P001, 25.02, day",
+    "P002, 24.98, day",
+    "P003, 25.08, day",
+    "P004, 25.12, day",
+    "P005, 24.92, day",
+    "P006, 25.00, night",
+    "P007, 24.97, night",
+    "P008, 25.06, night",
+    "P009, 25.11, night",
+    "P010, 24.99, night"
 ]
 
-# One list to store all diameters
 diameters = []
 
 # Parse each log line
 for line in logs:
-    parts = line.split()
+    fields = line.split(",")
 
-    part_code = parts[0]
-    diameter = float(parts[1])
-    shift = parts[2]
+    part_code = fields[0].strip()
+    diameter = float(fields[1].strip())
+    shift = fields[2].strip()
 
     diameters.append(diameter)
 
-# Report the results
-count = len(diameters)
-average = sum(diameters) / count
-minimum = min(diameters)
-maximum = max(diameters)
+    print(part_code, diameter, shift)
 
-print("Diameters:", diameters)
-print("Count:", count)
-print("Average:", average)
-print("Minimum:", minimum)
-print("Maximum:", maximum)
+# Calculate report
+print("\n===== SHIFT REPORT =====")
 
-# Justification:
-# A list is used because we want to keep every diameter,
-# including duplicate values, and preserve their order.
-# A set would remove duplicate values and does not preserve
-# the original order in the same way. 
+print("Total parts:", len(diameters))
+print("Average diameter:", sum(diameters) / len(diameters))
+print("Minimum diameter:", min(diameters))
+print("Maximum diameter:", max(diameters))
 
 it-8
 # 10 messy log lines
@@ -122,85 +116,77 @@ else:
 print("Scrapped part codes:", scrap_parts)
 
 it6-
-# Day-shift log lines
+# Two Shifts Compared
+
 day_logs = [
-    "P101   25.4   ACCEPT",
-    "P102  30.2   SCRAP",
-    "P103    18.7   SCRAP",
-    "P104 22.5   ACCEPT",
-    "P105     27.8   REWORK",
-    "P106  31.0 SCRAP",
-    "P107   19.6   SCRAP",
-    "P108  24.3   ACCEPT",
-    "P109 29.7   REWORK",
-    "P110    21.5   ACCEPT"
+    "P001, 25.02, day",
+    "P002, 25.08, day",
+    "P003, 25.12, day",
+    "P004, 24.98, day",
+    "P005, 24.85, day"
 ]
 
-# Night-shift log lines
 night_logs = [
-    "P101  25.4 ACCEPT",
-    "P102    30.2 SCRAP",
-    "P103 18.7 SCRAP",
-    "P111   23.5 ACCEPT",
-    "P112  31.5 SCRAP",
-    "P113    27.2 REWORK",
-    "P114 19.2 SCRAP",
-    "P108   24.3 ACCEPT",
-    "P115 29.5 REWORK",
-    "P116  21.8 ACCEPT"
+    "P001, 25.11, night",
+    "P006, 25.00, night",
+    "P007, 24.92, night",
+    "P008, 25.15, night",
+    "P009, 25.03, night"
 ]
 
+# Function to inspect each shift
+def inspect_shift(logs):
 
-def parse_shift(logs):
-    """Parse one shift and return total parts, accepted count, and scrap codes."""
-    accepted_count = 0
+    accepted = 0
+    rework = 0
+    scrap = 0
     scrap_codes = []
 
     for line in logs:
-        parts = line.split()
+        fields = line.split(",")
 
-        part_code = parts[0]
-        status = parts[2]
+        code = fields[0].strip()
+        diameter = float(fields[1].strip())
 
-        if status == "ACCEPT":
-            accepted_count += 1
-        elif status == "SCRAP":
-            scrap_codes.append(part_code)
+        if 24.95 <= diameter <= 25.05:
+            accepted += 1
 
-    return len(logs), accepted_count, scrap_codes
+        elif 24.90 <= diameter <= 25.10:
+            rework += 1
 
+        else:
+            scrap += 1
+            scrap_codes.append(code)
 
-# Parse day and night separately
-day_total, day_accepted, day_scrap = parse_shift(day_logs)
-night_total, night_accepted, night_scrap = parse_shift(night_logs)
+    total = len(logs)
 
-# Calculate accept rates
-day_accept_rate = day_accepted / day_total * 100
-night_accept_rate = night_accepted / night_total * 100
+    accept_rate = (accepted / total) * 100
 
-print("DAY SHIFT")
-print("Accept rate:", day_accept_rate, "%")
-print("Scrap codes:", day_scrap)
+    print("Total parts:", total)
+    print("Accepted:", accepted)
+    print("Rework:", rework)
+    print("Scrap:", scrap)
+    print("Accept rate:", accept_rate, "%")
 
-print("\nNIGHT SHIFT")
-print("Accept rate:", night_accept_rate, "%")
-print("Scrap codes:", night_scrap)
+    return set(scrap_codes)
 
 
-# Convert scrap lists to sets for comparison
-day_scrap_set = set(day_scrap)
-night_scrap_set = set(night_scrap)
+# Day shift report
+print("\n===== DAY SHIFT =====")
+day_scrap = inspect_shift(day_logs)
 
-# Parts scrapped in BOTH shifts
-scrapped_both = day_scrap_set & night_scrap_set
+# Night shift report
+print("\n===== NIGHT SHIFT =====")
+night_scrap = inspect_shift(night_logs)
 
-# Parts unique to the day shift
-day_only_scrap = day_scrap_set - night_scrap_set
+# Compare scrap lists using sets
+print("\n===== SCRAP COMPARISON =====")
 
-# Parts unique to the night shift
-night_only_scrap = night_scrap_set - day_scrap_set
+print("Scrap in both shifts:")
+print(day_scrap & night_scrap)
 
-print("\nSCRAP COMPARISON")
-print("Scrapped in both shifts:", sorted(scrapped_both))
-print("Scrapped only during day:", sorted(day_only_scrap))
-print("Scrapped only during night:", sorted(night_only_scrap))
+print("Scrap unique to day shift:")
+print(day_scrap - night_scrap)
+
+print("Scrap unique to night shift:")
+print(night_scrap - day_scrap)
