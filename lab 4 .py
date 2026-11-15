@@ -2,9 +2,13 @@ it 12-
 
 import random
 
+# Generate ten random diameters
+
 for i in range(10):
     diameter = random.uniform(24.90, 25.10)
-    print(round(diameter, 2))
+
+    print("Part", i + 1, "Diameter:",
+          round(diameter, 2))
 it 10- 
 import random
 
@@ -12,96 +16,122 @@ accept = 0
 rework = 0
 scrap = 0
 
-for i in range(100):
+# Generate and inspect 10 parts
+
+for i in range(10):
     diameter = random.uniform(24.90, 25.10)
+    diameter = round(diameter, 2)
+
+    print("\nPart", i + 1, "Diameter:", diameter)
 
     if 24.95 <= diameter <= 25.05:
-        bin = "ACCEPT"
+        print("ACCEPT")
         accept += 1
-    elif 24.90 <= diameter < 24.95 or 25.05 < diameter <= 25.10:
-        bin = "REWORK"
+
+    elif 24.90 <= diameter <= 25.10:
+        print("REWORK")
         rework += 1
+
     else:
-        bin = "SCRAP"
+        print("SCRAP")
         scrap += 1
 
-    print(f"Diameter: {diameter:.2f} -> {bin}")
+# Final shift report
 
-print("\n--- SHIFT REPORT ---")
-print(f"ACCEPT: {accept}")
-print(f"REWORK: {rework}")
-print(f"SCRAP: {scrap}")
-print("\nSame code, ten times the work, zero extra effort.")
-
+print("\n===== SHIFT REPORT =====")
+print("Accepted:", accept)
+print("Rework:", rework)
+print("Scrap:", scrap)
+print("Total:", accept + rework + scrap)
 it-8
 import random
-
-mode = input("Enter mode (halt/skip): ").lower()
 
 accept = 0
 rework = 0
 scrap = 0
 inspected = 0
 
-for i in range(100):
-    diameter = random.uniform(24.90, 25.10)
+mode = input("Enter mode (halt/skip): ").lower()
+
+for i in range(10):
+    diameter = round(random.uniform(24.90, 25.10), 2)
     inspected += 1
 
+    print("\nPart", inspected, "Diameter:", diameter)
+
     if 24.95 <= diameter <= 25.05:
-        bin = "ACCEPT"
+        print("ACCEPT")
         accept += 1
 
-    elif 24.90 <= diameter < 24.95 or 25.05 < diameter <= 25.10:
-        bin = "REWORK"
+    elif 24.93 <= diameter <= 25.07:
+        print("REWORK")
         rework += 1
 
     else:
-        bin = "SCRAP"
+        print("SCRAP")
         scrap += 1
-        print(f"Diameter: {diameter:.2f} -> SCRAP")
 
         if mode == "halt":
-            print("HALT MODE: Scrap detected. Batch stopped.")
+            print("Scrap found! Stopping batch.")
             break
+
         elif mode == "skip":
-            print("SKIP MODE: Scrap logged. Continuing batch.")
+            print("Skipping scrap and continuing.")
             continue
 
-    print(f"Diameter: {diameter:.2f} -> {bin}")
+# Final report
 
-print("\n--- SHIFT REPORT ---")
-print(f"Mode: {mode.upper()}")
-print(f"Inspected: {inspected}")
-print(f"ACCEPT: {accept}")
-print(f"REWORK: {rework}")
-print(f"SCRAP: {scrap}")
-
+print("\n===== FINAL REPORT =====")
+print("Inspected:", inspected)
+print("Accepted:", accept)
+print("Rework:", rework)
+print("Scrap:", scrap)
 it-6
 import random
 
-consecutive_accepts = 0
+accept = 0
+rework = 0
+scrap = 0
+
+consecutive = 0
 attempts = 0
+
+# Safety cap
 max_attempts = 500
 
-while consecutive_accepts < 5 and attempts < max_attempts:
-    diameter = random.uniform(24.90, 25.10)
+while consecutive < 5 and attempts < max_attempts:
+
+    diameter = round(random.uniform(24.90, 25.10), 2)
     attempts += 1
 
+    print("\nPart", attempts, "Diameter:", diameter)
+
     if 24.95 <= diameter <= 25.05:
-        result = "ACCEPT"
-        consecutive_accepts += 1
+        print("ACCEPT")
+        accept += 1
+        consecutive += 1
+
+    elif 24.93 <= diameter <= 25.07:
+        print("REWORK")
+        rework += 1
+        consecutive = 0
+
     else:
-        result = "REWORK"
-        consecutive_accepts = 0
+        print("SCRAP")
+        scrap += 1
+        consecutive = 0
 
-    print(f"Part {attempts}: {diameter:.2f} -> {result} | Consecutive ACCEPTs: {consecutive_accepts}")
+# Final report
 
-if consecutive_accepts == 5:
-    print("\nSUCCESS: Five consecutive ACCEPTs achieved.")
-    print(f"Parts required: {attempts}")
+print("\n===== PRODUCTION REPORT =====")
+
+print("Total attempts:", attempts)
+print("Accepted:", accept)
+print("Rework:", rework)
+print("Scrap:", scrap)
+
+if consecutive == 5:
+    print("SUCCESS: Five consecutive ACCEPTS achieved!")
+
 else:
-    print("\nSAFETY STOP: Maximum attempts reached.")
-    print(f"Parts inspected: {attempts}")
-
-print("\nRECORD:")
-print("An industrial program uses a safety cap so that an unexpected condition, faulty sensor, bad input, or endless process cannot make the machine run indefinitely.")
+    print("Safety limit reached. Five consecutive ACCEPTS not achieved.")
